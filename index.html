@@ -1,0 +1,891 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Glosario de Indicadores — Tecmilenio</title>
+<script>
+/* ── CONFIGURACIÓN ── solo toca esto ────────────────────────────────────────── */
+const CONFIG = {
+  CSV_KPIS:     'kpis.csv',
+  CSV_GLOSARIO: 'glosario.csv'
+};
+</script>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;0,9..40,600;1,9..40,300&display=swap" rel="stylesheet">
+<style>
+/* ── TOKENS ────────────────────────────────────────────────────────────────── */
+:root {
+  --p330:  #00534C;   /* Pantone 330 C  — dominante */
+  --p3295: #007864;   /* Pantone 3295 C — oscuro */
+  --p3272: #00A499;   /* Pantone 3272 C — medio */
+  --p570:  #6BCABA;   /* Pantone 570 C  — claro */
+  --p7479: #26D07C;   /* Pantone 7479 C — acento lima */
+
+  --ink:   #0D1F1E;
+  --ink60: rgba(13,31,30,.6);
+  --ink30: rgba(13,31,30,.3);
+  --ink10: rgba(13,31,30,.08);
+  --ink05: rgba(13,31,30,.04);
+
+  --surface: #F4F8F7;
+  --white:   #FFFFFF;
+
+  --r-sm: 6px;
+  --r-md: 12px;
+  --r-lg: 18px;
+
+  --shadow-sm: 0 1px 4px rgba(0,83,76,.08);
+  --shadow-md: 0 4px 20px rgba(0,83,76,.12);
+  --shadow-lg: 0 12px 48px rgba(0,83,76,.18);
+
+  --sidebar-w: 260px;
+  --header-h: 60px;
+  --transition: .22s cubic-bezier(.4,0,.2,1);
+}
+
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+html { scroll-behavior: smooth; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--surface);
+  color: var(--ink);
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  font-size: 15px;
+  line-height: 1.6;
+}
+
+/* ── HEADER ─────────────────────────────────────────────────────────────────── */
+header {
+  position: sticky; top: 0; z-index: 200;
+  height: var(--header-h);
+  background: var(--p330);
+  display: flex; align-items: center;
+  padding: 0 28px;
+  gap: 16px;
+}
+
+.h-wordmark {
+  font-family: 'DM Serif Display', serif;
+  font-size: 20px; color: var(--white);
+  letter-spacing: -.3px; white-space: nowrap;
+}
+.h-wordmark em { font-style: italic; color: var(--p570); }
+
+.h-sep { flex: 1; }
+
+.h-pill {
+  display: flex; align-items: center; gap: 8px;
+  background: rgba(255,255,255,.10);
+  border: 1px solid rgba(255,255,255,.18);
+  border-radius: 40px;
+  padding: 5px 14px 5px 10px;
+  font-size: 12px; color: rgba(255,255,255,.75);
+  cursor: pointer; transition: background var(--transition);
+}
+.h-pill:hover { background: rgba(255,255,255,.18); }
+.h-pill-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--p7479); flex-shrink: 0;
+  animation: pulse 2s ease infinite;
+}
+@keyframes pulse {
+  0%,100% { opacity:1; transform:scale(1); }
+  50% { opacity:.5; transform:scale(1.4); }
+}
+
+.h-upload-btn {
+  display: flex; align-items: center; gap: 6px;
+  background: var(--p7479); color: var(--ink);
+  border: none; border-radius: 40px;
+  padding: 7px 16px; font-family: inherit; font-size: 13px;
+  font-weight: 600; cursor: pointer; white-space: nowrap;
+  transition: filter var(--transition);
+}
+.h-upload-btn:hover { filter: brightness(1.08); }
+
+/* ── LAYOUT ─────────────────────────────────────────────────────────────────── */
+.app-shell {
+  display: flex; flex: 1;
+  max-width: 1440px; width: 100%; margin: 0 auto;
+}
+
+/* ── SIDEBAR ─────────────────────────────────────────────────────────────────── */
+.sidebar {
+  width: var(--sidebar-w);
+  min-width: var(--sidebar-w);
+  height: calc(100vh - var(--header-h));
+  position: sticky; top: var(--header-h);
+  overflow-y: auto;
+  background: var(--white);
+  border-right: 1px solid var(--ink10);
+  display: flex; flex-direction: column;
+  scrollbar-width: thin;
+  scrollbar-color: var(--ink10) transparent;
+}
+.sidebar::-webkit-scrollbar { width: 4px; }
+.sidebar::-webkit-scrollbar-thumb { background: var(--ink10); border-radius: 4px; }
+
+.sb-block { padding: 20px 18px 0; }
+.sb-label {
+  font-size: 10px; font-weight: 600;
+  letter-spacing: 1.4px; text-transform: uppercase;
+  color: var(--ink30); margin-bottom: 10px;
+}
+
+/* Search */
+.sb-search {
+  position: relative; margin-bottom: 20px;
+}
+.sb-search input {
+  width: 100%; padding: 9px 38px 9px 14px;
+  background: var(--surface); border: 1.5px solid transparent;
+  border-radius: var(--r-sm); font-family: inherit; font-size: 13.5px;
+  color: var(--ink); outline: none;
+  transition: border-color var(--transition), background var(--transition);
+}
+.sb-search input:focus {
+  border-color: var(--p3272); background: var(--white);
+}
+.sb-search input::placeholder { color: var(--ink30); }
+.sb-search svg {
+  position: absolute; right: 11px; top: 50%; transform: translateY(-50%);
+  color: var(--ink30); pointer-events: none;
+}
+
+/* Filter chips */
+.chip-row { display: flex; flex-wrap: wrap; gap: 5px; margin-bottom: 18px; }
+.chip {
+  padding: 4px 12px; border-radius: 40px; font-size: 12px; font-weight: 500;
+  border: 1.5px solid var(--ink10); background: var(--white);
+  color: var(--ink60); cursor: pointer; user-select: none;
+  transition: all var(--transition);
+}
+.chip:hover { border-color: var(--p3272); color: var(--p330); }
+.chip.on { background: var(--p330); color: var(--white); border-color: var(--p330); }
+.chip.on-bono { background: var(--p7479); color: var(--ink); border-color: var(--p7479); }
+
+.sb-divider { height: 1px; background: var(--ink10); margin: 4px 0 14px; }
+
+/* Index */
+.sb-index { list-style: none; padding-bottom: 28px; }
+.sb-idx-item {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 8px 18px; font-size: 12.5px; color: var(--ink60);
+  cursor: pointer; border-left: 2px solid transparent;
+  transition: all var(--transition); gap: 8px;
+}
+.sb-idx-item:hover { background: var(--surface); border-left-color: var(--p570); color: var(--ink); }
+.sb-idx-item.on { background: rgba(0,164,153,.07); border-left-color: var(--p3272); color: var(--p330); font-weight: 600; }
+.sb-idx-badge {
+  font-size: 10px; padding: 1px 7px; border-radius: 10px;
+  background: var(--ink05); color: var(--ink30); flex-shrink: 0;
+  font-weight: 500;
+}
+
+/* ── MAIN ────────────────────────────────────────────────────────────────────── */
+main {
+  flex: 1; min-width: 0;
+  padding: 36px 44px 60px;
+  display: flex; flex-direction: column; gap: 48px;
+}
+
+/* ── HERO (estado vacío) ─────────────────────────────────────────────────────── */
+.hero-empty {
+  display: flex; flex-direction: column;
+  align-items: center; justify-content: center;
+  flex: 1; text-align: center;
+  padding: 80px 40px;
+  animation: fadeUp .5s ease both;
+}
+.hero-icon {
+  width: 80px; height: 80px; border-radius: 20px;
+  background: linear-gradient(135deg, var(--p330), var(--p3272));
+  display: flex; align-items: center; justify-content: center;
+  font-size: 36px; margin-bottom: 24px;
+  box-shadow: 0 8px 32px rgba(0,83,76,.25);
+}
+.hero-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 32px; color: var(--p330); margin-bottom: 12px;
+  letter-spacing: -.5px;
+}
+.hero-desc { font-size: 15px; color: var(--ink60); max-width: 400px; line-height: 1.7; margin-bottom: 32px; }
+
+.drop-zone {
+  width: 100%; max-width: 440px;
+  border: 2px dashed rgba(0,83,76,.25); border-radius: var(--r-lg);
+  padding: 28px 32px; text-align: center;
+  transition: border-color var(--transition), background var(--transition);
+  cursor: pointer;
+}
+.drop-zone:hover { border-color: var(--p3272); background: rgba(0,164,153,.04); }
+.drop-zone-label { font-size: 13px; color: var(--ink30); margin-bottom: 16px; }
+.drop-zone-or { font-size: 12px; color: var(--ink30); margin: 14px 0; }
+.sp-row { display: flex; gap: 8px; }
+.sp-row input {
+  flex: 1; padding: 8px 12px;
+  border: 1.5px solid var(--ink10); border-radius: var(--r-sm);
+  font-family: inherit; font-size: 12.5px; color: var(--ink); outline: none;
+  transition: border-color var(--transition);
+}
+.sp-row input:focus { border-color: var(--p3272); }
+.sp-row input::placeholder { color: var(--ink30); }
+.btn-sp {
+  background: var(--p330); color: var(--white);
+  border: none; border-radius: var(--r-sm);
+  padding: 8px 16px; font-family: inherit; font-size: 12.5px;
+  font-weight: 600; cursor: pointer; white-space: nowrap;
+  transition: background var(--transition);
+}
+.btn-sp:hover { background: var(--p3295); }
+
+/* ── STATS BAR ───────────────────────────────────────────────────────────────── */
+.stats-row {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 14px;
+}
+.stat-tile {
+  background: var(--white); border-radius: var(--r-md);
+  padding: 18px 22px;
+  border: 1px solid var(--ink10);
+  box-shadow: var(--shadow-sm);
+  display: flex; align-items: center; gap: 14px;
+  animation: fadeUp .4s ease both;
+}
+.stat-tile:nth-child(2) { animation-delay: .06s; }
+.stat-tile:nth-child(3) { animation-delay: .12s; }
+.stat-icon-wrap {
+  width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center; font-size: 20px;
+}
+.stat-tile:nth-child(1) .stat-icon-wrap { background: rgba(0,83,76,.08); }
+.stat-tile:nth-child(2) .stat-icon-wrap { background: rgba(38,208,124,.12); }
+.stat-tile:nth-child(3) .stat-icon-wrap { background: rgba(0,164,153,.10); }
+.stat-n { font-family: 'DM Serif Display', serif; font-size: 30px; color: var(--p330); line-height: 1; }
+.stat-lbl { font-size: 12px; color: var(--ink60); margin-top: 2px; }
+
+/* ── SECTION TITLE ───────────────────────────────────────────────────────────── */
+.sec-head { display: flex; align-items: baseline; gap: 12px; margin-bottom: 20px; }
+.sec-title {
+  font-family: 'DM Serif Display', serif;
+  font-size: 24px; color: var(--ink); letter-spacing: -.4px;
+}
+.sec-count {
+  font-size: 13px; color: var(--ink30); font-weight: 400;
+}
+
+/* ── KPI CARDS ───────────────────────────────────────────────────────────────── */
+.kpi-list { display: flex; flex-direction: column; gap: 10px; }
+
+.kpi-card {
+  background: var(--white); border: 1px solid var(--ink10);
+  border-radius: var(--r-md); overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition), border-color var(--transition);
+  animation: fadeUp .4s ease both;
+}
+.kpi-card:hover { box-shadow: var(--shadow-md); border-color: rgba(0,164,153,.2); }
+
+/* Collapsed header — always visible */
+.kpi-head {
+  display: flex; align-items: center; gap: 12px;
+  padding: 16px 20px; cursor: pointer;
+  user-select: none;
+}
+
+.kpi-tipo-bar {
+  width: 4px; min-width: 4px; height: 36px; border-radius: 4px; flex-shrink: 0;
+}
+.tipo-operativo  { background: var(--p3272); }
+.tipo-estrategico { background: var(--p330); }
+.tipo-consejo    { background: var(--p3295); }
+
+.kpi-head-text { flex: 1; min-width: 0; }
+.kpi-name {
+  font-size: 15px; font-weight: 600; color: var(--ink);
+  white-space: nowrap; overflow: hidden; text-overflow: ellipsis;
+}
+.kpi-meta { display: flex; flex-wrap: wrap; gap: 5px; margin-top: 5px; }
+
+.badge {
+  display: inline-flex; align-items: center; gap: 3px;
+  padding: 2px 9px; border-radius: 40px;
+  font-size: 11px; font-weight: 500; white-space: nowrap;
+}
+.b-operativo   { background: rgba(0,164,153,.10); color: var(--p3295); }
+.b-estrategico { background: rgba(0,83,76,.08);   color: var(--p330);  }
+.b-consejo     { background: rgba(0,120,100,.10); color: var(--p3295); }
+.b-bono        { background: rgba(38,208,124,.15); color: #1a7a4a; }
+.b-nobono      { background: var(--ink05); color: var(--ink30); }
+.b-area        { background: rgba(107,202,186,.18); color: var(--p3295); }
+.b-freq        { background: var(--ink05); color: var(--ink30); }
+
+.kpi-chevron {
+  flex-shrink: 0; color: var(--ink30);
+  transition: transform var(--transition);
+  width: 18px; height: 18px;
+}
+.kpi-card.open .kpi-chevron { transform: rotate(180deg); }
+
+/* Expanded body */
+.kpi-body {
+  display: none;
+  padding: 0 20px 20px 36px; /* align with text, skip tipo bar */
+  border-top: 1px solid var(--ink05);
+  animation: bodyIn .2s ease both;
+}
+.kpi-card.open .kpi-body { display: block; }
+
+@keyframes bodyIn {
+  from { opacity:0; transform: translateY(-6px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+
+.kpi-def-label {
+  font-size: 10px; font-weight: 600; letter-spacing: 1.2px;
+  text-transform: uppercase; color: var(--ink30); margin: 16px 0 6px;
+}
+.kpi-def { font-size: 14px; color: var(--ink); line-height: 1.75; }
+
+.kpi-formula {
+  margin-top: 14px; padding: 12px 16px;
+  background: var(--surface); border-left: 3px solid var(--p570);
+  border-radius: 0 var(--r-sm) var(--r-sm) 0;
+}
+.kpi-formula-label { font-size: 10px; font-weight: 600; letter-spacing: 1.2px; text-transform: uppercase; color: var(--p3272); margin-bottom: 5px; }
+.kpi-formula-text {
+  font-family: 'DM Mono', 'Fira Code', 'Courier New', monospace;
+  font-size: 13px; color: var(--p330); line-height: 1.6;
+}
+
+.kpi-tags-row { margin-top: 12px; }
+.kpi-tags-label { font-size: 10px; color: var(--ink30); font-weight: 500; }
+.kpi-tags-val { font-size: 12px; color: var(--ink60); }
+
+/* ── GLOSARIO ────────────────────────────────────────────────────────────────── */
+.glosario-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 12px;
+}
+
+.glos-card {
+  background: var(--white); border: 1px solid var(--ink10);
+  border-radius: var(--r-md); overflow: hidden;
+  box-shadow: var(--shadow-sm);
+  transition: box-shadow var(--transition);
+  animation: fadeUp .4s ease both;
+}
+.glos-card:hover { box-shadow: var(--shadow-md); }
+
+.glos-head {
+  display: flex; align-items: center; justify-content: space-between;
+  padding: 14px 18px; cursor: pointer; gap: 10px;
+}
+.glos-term {
+  font-family: 'DM Serif Display', serif;
+  font-size: 17px; color: var(--p330);
+}
+.glos-short { font-size: 12px; color: var(--ink60); margin-top: 2px; line-height: 1.4; }
+.glos-chevron {
+  flex-shrink: 0; color: var(--ink30);
+  transition: transform var(--transition); width: 16px; height: 16px;
+}
+.glos-card.open .glos-chevron { transform: rotate(180deg); }
+
+.glos-body {
+  display: none; padding: 0 18px 16px;
+  border-top: 1px solid var(--ink05);
+  animation: bodyIn .2s ease both;
+}
+.glos-card.open .glos-body { display: block; }
+.glos-long { font-size: 13px; color: var(--ink); line-height: 1.75; padding-top: 12px; }
+
+/* ── TOOLTIP ─────────────────────────────────────────────────────────────────── */
+.gloss-inline {
+  border-bottom: 1.5px dashed var(--p3272);
+  color: var(--p330); cursor: help; font-weight: 500;
+}
+.tooltip {
+  display: none; position: fixed; z-index: 999;
+  max-width: 260px; padding: 10px 14px;
+  background: var(--ink); color: var(--white);
+  font-size: 12.5px; line-height: 1.55;
+  border-radius: var(--r-sm);
+  box-shadow: var(--shadow-lg);
+  pointer-events: none;
+}
+.tooltip.show { display: block; }
+
+/* ── NO RESULTS ──────────────────────────────────────────────────────────────── */
+.no-results {
+  padding: 48px; text-align: center;
+  color: var(--ink30); font-size: 14px;
+  display: none;
+}
+
+/* ── ANIMATIONS ──────────────────────────────────────────────────────────────── */
+@keyframes fadeUp {
+  from { opacity:0; transform: translateY(14px); }
+  to   { opacity:1; transform: translateY(0); }
+}
+
+/* ── FILE INPUT HIDDEN ────────────────────────────────────────────────────────── */
+#file-input, #file-input-sidebar { display: none; }
+
+/* ── SCROLLBAR ───────────────────────────────────────────────────────────────── */
+main { scrollbar-width: thin; scrollbar-color: var(--ink10) transparent; }
+
+/* ══════════════════════════════════════════════════════════════════════════════
+   MEDIA QUERIES
+   ══════════════════════════════════════════════════════════════════════════════ */
+
+/* Large: sidebar visible, 2-col glosario */
+@media (min-width: 1200px) {
+  :root { --sidebar-w: 280px; }
+  .glosario-grid { grid-template-columns: repeat(3, 1fr); }
+  main { padding: 40px 56px 72px; }
+}
+
+/* Medium: sidebar visible but narrower */
+@media (max-width: 1024px) {
+  :root { --sidebar-w: 230px; }
+  main { padding: 28px 32px 56px; }
+  .stats-row { grid-template-columns: repeat(3, 1fr); }
+}
+
+/* Tablet: hide sidebar, show inline filter bar */
+@media (max-width: 768px) {
+  .sidebar { display: none; }
+  .app-shell { flex-direction: column; }
+  main { padding: 20px 18px 48px; }
+  .stats-row { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .stat-tile { padding: 14px 16px; }
+  .stat-n { font-size: 24px; }
+  .glosario-grid { grid-template-columns: 1fr; }
+  .mobile-filter-bar {
+    display: flex !important;
+    overflow-x: auto; gap: 6px; padding: 12px 18px;
+    background: var(--white); border-bottom: 1px solid var(--ink10);
+    scrollbar-width: none;
+  }
+  .mobile-filter-bar::-webkit-scrollbar { display: none; }
+}
+
+/* Mobile: always show filter bar even on larger */
+.mobile-filter-bar { display: none; }
+
+/* ── Small phone ── */
+@media (max-width: 480px) {
+  header { padding: 0 16px; }
+  .h-wordmark { font-size: 17px; }
+  .stats-row { grid-template-columns: 1fr 1fr; }
+  .stat-tile:last-child { grid-column: span 2; }
+}
+</style>
+</head>
+<body>
+
+<!-- ── HEADER ── -->
+<header>
+  <div class="h-wordmark"><em>Glosario</em> de Indicadores</div>
+  <div class="h-sep"></div>
+  <div class="h-pill" id="status-pill">
+    <span class="h-pill-dot"></span>
+    <span id="status-text">Sin archivo</span>
+  </div>
+  <button class="h-upload-btn" onclick="autoLoad()">
+    <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><polyline points="23 4 23 10 17 10"/><path d="M20.49 15a9 9 0 1 1-2.12-9.36L23 10"/></svg>
+    Actualizar datos
+  </button>
+</header>
+
+<!-- Mobile filter bar (tablet/phone) -->
+<div class="mobile-filter-bar" id="mobile-filters">
+  <input type="text" id="mobile-search" placeholder="Buscar…" style="padding:6px 12px;border:1.5px solid var(--ink10);border-radius:40px;font-family:inherit;font-size:13px;outline:none;min-width:150px;">
+  <span class="chip on" data-group="tipo" data-val="all">Todos</span>
+  <span class="chip" data-group="tipo" data-val="Operativo">Operativo</span>
+  <span class="chip" data-group="tipo" data-val="Estratégico">Estratégico</span>
+  <span class="chip" data-group="tipo" data-val="Consejo">Consejo</span>
+  <span class="chip" data-group="bono" data-val="all">Todos</span>
+  <span class="chip" data-group="bono" data-val="Sí">Bono</span>
+  <span class="chip" data-group="bono" data-val="No">Sin bono</span>
+</div>
+
+<div class="app-shell">
+
+  <!-- ── SIDEBAR ── -->
+  <aside class="sidebar">
+    <div class="sb-block">
+      <div class="sb-label">Buscar</div>
+      <div class="sb-search">
+        <input type="text" id="search-input" placeholder="Nombre, área, etiqueta…" autocomplete="off">
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><line x1="21" y1="21" x2="16.65" y2="16.65"/></svg>
+      </div>
+
+      <div class="sb-label">Tipo</div>
+      <div class="chip-row" id="filter-tipo">
+        <span class="chip on"  data-val="all">Todos</span>
+        <span class="chip" data-val="Operativo">Operativo</span>
+        <span class="chip" data-val="Estratégico">Estratégico</span>
+        <span class="chip" data-val="Consejo">Consejo</span>
+      </div>
+
+      <div class="sb-label">Bono de productividad</div>
+      <div class="chip-row" id="filter-bono">
+        <span class="chip on"  data-val="all">Todos</span>
+        <span class="chip" data-val="Sí">Aplica</span>
+        <span class="chip" data-val="No">No aplica</span>
+      </div>
+    </div>
+
+    <div class="sb-divider"></div>
+
+    <div class="sb-block" style="padding-bottom:8px;">
+      <div class="sb-label">Índice</div>
+    </div>
+    <ul class="sb-index" id="sb-index"></ul>
+
+    <div class="sb-divider"></div>
+
+    <div class="sb-block" style="padding-bottom:20px;">
+      <div class="sb-label">Datos</div>
+      <button class="btn-sp" onclick="autoLoad()" style="width:100%;display:flex;align-items:center;justify-content:center;gap:6px;">
+        🔄 Actualizar
+      </button>
+      <p style="font-size:11px;color:var(--ink30);margin-top:8px;line-height:1.5;">Los datos se cargan automáticamente. Usa este botón si hubo cambios recientes.</p>
+    </div>
+  </aside>
+
+  <!-- ── MAIN ── -->
+  <main id="main">
+
+    <!-- LOADING STATE -->
+    <div id="loading-state" class="hero-empty">
+      <div class="hero-icon">⏳</div>
+      <div class="hero-title">Cargando glosario…</div>
+      <div class="hero-desc">Un momento.</div>
+    </div>
+
+    <!-- ERROR STATE (oculto por defecto) -->
+    <div id="empty-state" class="hero-empty" style="display:none;">
+      <div class="hero-icon">⚠️</div>
+      <div class="hero-title">No se pudieron cargar los datos</div>
+      <div id="error-msg" style="font-size:13px;color:var(--ink60);margin-bottom:20px;max-width:400px;text-align:center;line-height:1.6;"></div>
+      <button class="btn-sp" onclick="autoLoad()">🔄 Reintentar</button>
+    </div>
+
+    <!-- APP STATE -->
+    <div id="app-state" style="display:none;">
+
+      <!-- Stats -->
+      <div class="stats-row" id="stats-row"></div>
+
+      <!-- KPIs -->
+      <section id="sec-kpis">
+        <div class="sec-head">
+          <h2 class="sec-title">Indicadores</h2>
+          <span class="sec-count" id="kpi-count"></span>
+        </div>
+        <div class="kpi-list" id="kpi-list"></div>
+        <div class="no-results" id="no-results">No se encontraron KPIs con los filtros actuales.</div>
+      </section>
+
+      <!-- Glosario -->
+      <section id="sec-glosario">
+        <div class="sec-head">
+          <h2 class="sec-title">Terminología</h2>
+          <span class="sec-count" id="glos-count"></span>
+        </div>
+        <div class="glosario-grid" id="glosario-grid"></div>
+      </section>
+
+    </div>
+  </main>
+</div>
+
+<!-- Tooltip -->
+<div class="tooltip" id="tooltip"></div>
+
+<script>
+/* ── STATE ──────────────────────────────────────────────────────────────────── */
+let allKPIs     = [];
+let allGlosario = {};
+let filterTipo  = 'all';
+let filterBono  = 'all';
+let query       = '';
+
+/* ── CSV LOADING ──────────────────────────────────────────────────────────────── */
+
+function parseCSV(text) {
+  const lines = text.trim().split('\n');
+  const headers = splitLine(lines[0]);
+  return lines.slice(1).filter(l => l.trim()).map(line => {
+    const vals = splitLine(line);
+    const obj = {};
+    headers.forEach((h, i) => obj[h.trim()] = (vals[i] || '').trim());
+    return obj;
+  });
+}
+
+function splitLine(line) {
+  const out = []; let cur = ''; let q = false;
+  for (let i = 0; i < line.length; i++) {
+    const c = line[i];
+    if (c === '"') { q = !q; continue; }
+    if (c === ',' && !q) { out.push(cur); cur = ''; continue; }
+    cur += c;
+  }
+  out.push(cur);
+  return out;
+}
+
+async function autoLoad() {
+  try {
+    const [r1, r2] = await Promise.all([
+      fetch(CONFIG.CSV_KPIS    + '?v=' + Date.now()),
+      fetch(CONFIG.CSV_GLOSARIO + '?v=' + Date.now())
+    ]);
+    if (!r1.ok) throw new Error('No se pudo leer kpis.csv');
+    if (!r2.ok) throw new Error('No se pudo leer glosario.csv');
+
+    const [t1, t2] = await Promise.all([r1.text(), r2.text()]);
+
+    allKPIs = parseCSV(t1);
+    allGlosario = {};
+    parseCSV(t2).forEach(r => {
+      if (r.Termino) allGlosario[r.Termino.toLowerCase()] = {
+        term: r.Termino, short: r.Definicion_Corta || '', long: r.Definicion_Larga || ''
+      };
+    });
+
+    document.getElementById('loading-state').style.display = 'none';
+    document.getElementById('empty-state').style.display   = 'none';
+    document.getElementById('app-state').style.display     = 'block';
+    document.getElementById('status-text').textContent     = `${allKPIs.length} KPIs · ${Object.keys(allGlosario).length} términos`;
+    renderAll();
+  } catch(e) {
+    document.getElementById('loading-state').style.display = 'none';
+    document.getElementById('error-msg').textContent       = e.message;
+    document.getElementById('empty-state').style.display   = 'flex';
+  }
+}
+
+/* ── RENDER ───────────────────────────────────────────────────────────────────── */
+function renderAll() {
+  renderStats();
+  renderKPIs();
+  renderGlosario();
+}
+
+function getFiltered() {
+  const q = query.toLowerCase();
+  return allKPIs.filter(k => {
+    if (filterTipo !== 'all' && k.Tipo !== filterTipo) return false;
+    if (filterBono !== 'all' && k.Aplica_Bono !== filterBono) return false;
+    if (q) return [k.Nombre,k.Definicion,k.Tags,k.Area].some(v => (v||'').toLowerCase().includes(q));
+    return true;
+  });
+}
+
+function renderStats() {
+  const total = allKPIs.length;
+  const bono  = allKPIs.filter(k => k.Aplica_Bono === 'Sí').length;
+  const cons  = allKPIs.filter(k => k.Tipo === 'Consejo').length;
+  document.getElementById('stats-row').innerHTML = `
+    <div class="stat-tile">
+      <div class="stat-icon-wrap">📋</div>
+      <div><div class="stat-n">${total}</div><div class="stat-lbl">KPIs registrados</div></div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-icon-wrap">💰</div>
+      <div><div class="stat-n">${bono}</div><div class="stat-lbl">Aplican a bono</div></div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-icon-wrap">🏛️</div>
+      <div><div class="stat-n">${cons}</div><div class="stat-lbl">Indicadores de Consejo</div></div>
+    </div>
+  `;
+}
+
+const tipoClass = { Operativo:'operativo', Estratégico:'estrategico', Consejo:'consejo' };
+const tipoBar   = { Operativo:'tipo-operativo', Estratégico:'tipo-estrategico', Consejo:'tipo-consejo' };
+
+function badgeTipo(t) {
+  const c = tipoClass[t] || 'operativo';
+  return `<span class="badge b-${c}">${t||'—'}</span>`;
+}
+function badgeBono(b) {
+  return b === 'Sí'
+    ? `<span class="badge b-bono">💰 Bono</span>`
+    : `<span class="badge b-nobono">Sin bono</span>`;
+}
+
+function linkTerms(txt) {
+  if (!txt) return '';
+  let out = txt;
+  Object.keys(allGlosario).sort((a,b)=>b.length-a.length).forEach(k => {
+    const g = allGlosario[k];
+    out = out.replace(new RegExp(`\\b(${esc(g.term)})\\b`, 'gi'),
+      m => `<span class="gloss-inline" data-k="${k}">${m}</span>`);
+  });
+  return out;
+}
+function esc(s) { return s.replace(/[.*+?^${}()|[\]\\]/g,'\\$&'); }
+
+function renderKPIs() {
+  const rows = getFiltered();
+  const list = document.getElementById('kpi-list');
+  const noRes = document.getElementById('no-results');
+  const cnt   = document.getElementById('kpi-count');
+
+  // Rebuild sidebar index
+  const idx = document.getElementById('sb-index');
+  idx.innerHTML = rows.map((k,i) => `
+    <li class="sb-idx-item" onclick="expandCard('kpi-${i}','idx-${i}')" id="idx-${i}">
+      <span style="min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">${k.Nombre}</span>
+      <span class="sb-idx-badge">${k.Tipo||''}</span>
+    </li>`).join('');
+
+  cnt.textContent = `${rows.length} indicador${rows.length!==1?'es':''}`;
+
+  if (!rows.length) { list.innerHTML=''; noRes.style.display='block'; return; }
+  noRes.style.display = 'none';
+
+  list.innerHTML = rows.map((k,i) => {
+    const bar = tipoBar[k.Tipo] || 'tipo-operativo';
+    return `
+    <div class="kpi-card" id="kpi-${i}" style="animation-delay:${i*.04}s">
+      <div class="kpi-head" onclick="toggleCard('kpi-${i}')">
+        <div class="kpi-tipo-bar ${bar}"></div>
+        <div class="kpi-head-text">
+          <div class="kpi-name">${k.Nombre||'Sin nombre'}</div>
+          <div class="kpi-meta">
+            ${badgeTipo(k.Tipo)}
+            ${badgeBono(k.Aplica_Bono)}
+            ${k.Area   ? `<span class="badge b-area">🏢 ${k.Area}</span>` : ''}
+            ${k.Frecuencia ? `<span class="badge b-freq">🕐 ${k.Frecuencia}</span>` : ''}
+          </div>
+        </div>
+        <svg class="kpi-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>
+      </div>
+      <div class="kpi-body">
+        <div class="kpi-def-label">Definición</div>
+        <div class="kpi-def">${linkTerms(k.Definicion)}</div>
+        ${k.Formula ? `
+          <div class="kpi-formula">
+            <div class="kpi-formula-label">Fórmula de cálculo</div>
+            <div class="kpi-formula-text">${k.Formula}</div>
+          </div>` : ''}
+        ${k.Tags ? `
+          <div class="kpi-tags-row" style="margin-top:12px;">
+            <span class="kpi-tags-label">Etiquetas: </span>
+            <span class="kpi-tags-val">${k.Tags}</span>
+          </div>` : ''}
+      </div>
+    </div>`;
+  }).join('');
+
+  attachTooltips();
+}
+
+function renderGlosario() {
+  const terms = Object.values(allGlosario);
+  const cnt   = document.getElementById('glos-count');
+  cnt.textContent = `${terms.length} término${terms.length!==1?'s':''}`;
+
+  document.getElementById('glosario-grid').innerHTML = terms.map((g,i) => `
+    <div class="glos-card" id="glos-${i}" style="animation-delay:${i*.05}s">
+      <div class="glos-head" onclick="toggleGlos('glos-${i}')">
+        <div>
+          <div class="glos-term">${g.term}</div>
+          ${g.short ? `<div class="glos-short">${g.short}</div>` : ''}
+        </div>
+        ${g.long ? `<svg class="glos-chevron" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="6 9 12 15 18 9"/></svg>` : ''}
+      </div>
+      ${g.long ? `
+        <div class="glos-body">
+          <div class="glos-long">${g.long}</div>
+        </div>` : ''}
+    </div>`).join('');
+}
+
+/* ── INTERACTIONS ─────────────────────────────────────────────────────────────── */
+function toggleCard(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+function expandCard(cardId, idxId) {
+  const card = document.getElementById(cardId);
+  if (card) {
+    card.classList.add('open');
+    card.scrollIntoView({ behavior:'smooth', block:'start' });
+  }
+  document.querySelectorAll('.sb-idx-item').forEach(el => el.classList.remove('on'));
+  const idxEl = document.getElementById(idxId);
+  if (idxEl) idxEl.classList.add('on');
+}
+
+function toggleGlos(id) {
+  document.getElementById(id).classList.toggle('open');
+}
+
+/* Filters */
+document.getElementById('search-input').addEventListener('input', e => { query = e.target.value; renderKPIs(); });
+
+function setupChipGroup(containerId, stateKey) {
+  document.getElementById(containerId).addEventListener('click', e => {
+    const chip = e.target.closest('.chip');
+    if (!chip) return;
+    if (stateKey === 'tipo') filterTipo = chip.dataset.val;
+    else filterBono = chip.dataset.val;
+    document.querySelectorAll(`#${containerId} .chip`).forEach(c => c.classList.remove('on','on-bono'));
+    chip.classList.add(stateKey === 'bono' && chip.dataset.val === 'Sí' ? 'on-bono' : 'on');
+    renderKPIs();
+  });
+}
+setupChipGroup('filter-tipo','tipo');
+setupChipGroup('filter-bono','bono');
+
+// Mobile search
+const mobileSearch = document.getElementById('mobile-search');
+if (mobileSearch) mobileSearch.addEventListener('input', e => { query = e.target.value; renderKPIs(); });
+
+/* ── TOOLTIP ──────────────────────────────────────────────────────────────────── */
+const tip = document.getElementById('tooltip');
+
+function attachTooltips() {
+  document.querySelectorAll('.gloss-inline').forEach(el => {
+    el.addEventListener('mouseenter', e => {
+      const g = allGlosario[el.dataset.k];
+      if (!g) return;
+      tip.textContent = g.short || g.long.slice(0,120)+'…';
+      tip.classList.add('show');
+      moveTip(e);
+    });
+    el.addEventListener('mousemove', moveTip);
+    el.addEventListener('mouseleave', () => tip.classList.remove('show'));
+  });
+}
+
+function moveTip(e) {
+  const pad = 14;
+  let x = e.clientX + pad;
+  let y = e.clientY + pad;
+  if (x + 270 > window.innerWidth)  x = e.clientX - 270 - pad;
+  if (y +  80 > window.innerHeight) y = e.clientY -  80 - pad;
+  tip.style.left = x + 'px';
+  tip.style.top  = y + 'px';
+}
+
+/* ── ARRANQUE ────────────────────────────────────────────────────────────────── */
+document.addEventListener('DOMContentLoaded', autoLoad);
+</script>
+</body>
+</html>
