@@ -323,6 +323,8 @@ main {
 .b-consejo     { background: rgba(0,120,100,.10); color: var(--p3295); }
 .b-bono        { background: rgba(38,208,124,.15); color: #1a7a4a; }
 .b-nobono      { background: var(--ink05); color: var(--ink30); }
+.b-calibra     { background: rgba(0,120,100,.12); color: var(--p3295); }
+.b-nocalibra   { background: var(--ink05); color: var(--ink30); }
 .b-area        { background: rgba(107,202,186,.18); color: var(--p3295); }
 .b-freq        { background: var(--ink05); color: var(--ink30); }
 
@@ -516,6 +518,9 @@ main { scrollbar-width: thin; scrollbar-color: var(--ink10) transparent; }
   <span class="chip" data-group="bono" data-val="all">Todos</span>
   <span class="chip" data-group="bono" data-val="Sí">Bono</span>
   <span class="chip" data-group="bono" data-val="No">Sin bono</span>
+  <span class="chip" data-group="calibra" data-val="all">Todos</span>
+  <span class="chip" data-group="calibra" data-val="Sí">Calibración</span>
+  <span class="chip" data-group="calibra" data-val="No">Sin calibración</span>
 </div>
 
 <div class="app-shell">
@@ -540,6 +545,13 @@ main { scrollbar-width: thin; scrollbar-color: var(--ink10) transparent; }
       <div class="sb-label">Bono de productividad</div>
       <div class="chip-row" id="filter-bono">
         <span class="chip on"  data-val="all">Todos</span>
+        <span class="chip" data-val="Sí">Aplica</span>
+        <span class="chip" data-val="No">No aplica</span>
+      </div>
+
+      <div class="sb-label">Calibración</div>
+      <div class="chip-row" id="filter-calibra">
+        <span class="chip on" data-val="all">Todos</span>
         <span class="chip" data-val="Sí">Aplica</span>
         <span class="chip" data-val="No">No aplica</span>
       </div>
@@ -619,6 +631,7 @@ let allKPIs     = [];
 let allGlosario = {};
 let filterTipo  = 'all';
 let filterBono  = 'all';
+let filterCalibra = 'all';
 let query       = '';
 
 /* ── CSV LOADING ──────────────────────────────────────────────────────────────── */
@@ -689,6 +702,7 @@ function getFiltered() {
   return allKPIs.filter(k => {
     if (filterTipo !== 'all' && k.Tipo !== filterTipo) return false;
     if (filterBono !== 'all' && k.Aplica_Bono !== filterBono) return false;
+    if (filterCalibra !== 'all' && k.Calibracion !== filterCalibra) return false;
     if (q) return [k.Nombre,k.Definicion,k.Tags,k.Area].some(v => (v||'').toLowerCase().includes(q));
     return true;
   });
@@ -725,6 +739,11 @@ function badgeBono(b) {
   return b === 'Sí'
     ? `<span class="badge b-bono">💰 Bono</span>`
     : `<span class="badge b-nobono">Sin bono</span>`;
+}
+function badgeCalibra(c) {
+  return c === 'Sí'
+    ? `<span class="badge b-calibra">🎯 Calibración</span>`
+    : `<span class="badge b-nocalibra">Sin calibración</span>`;
 }
 
 function linkTerms(txt) {
@@ -769,6 +788,7 @@ function renderKPIs() {
           <div class="kpi-meta">
             ${badgeTipo(k.Tipo)}
             ${badgeBono(k.Aplica_Bono)}
+            ${badgeCalibra(k.Calibracion)}
             ${k.Area   ? `<span class="badge b-area">🏢 ${k.Area}</span>` : ''}
             ${k.Frecuencia ? `<span class="badge b-freq">🕐 ${k.Frecuencia}</span>` : ''}
           </div>
@@ -843,8 +863,9 @@ function setupChipGroup(containerId, stateKey) {
   document.getElementById(containerId).addEventListener('click', e => {
     const chip = e.target.closest('.chip');
     if (!chip) return;
-    if (stateKey === 'tipo') filterTipo = chip.dataset.val;
-    else filterBono = chip.dataset.val;
+    if (stateKey === 'tipo')    filterTipo    = chip.dataset.val;
+    else if (stateKey === 'bono')   filterBono    = chip.dataset.val;
+    else if (stateKey === 'calibra') filterCalibra = chip.dataset.val;
     document.querySelectorAll(`#${containerId} .chip`).forEach(c => c.classList.remove('on','on-bono'));
     chip.classList.add(stateKey === 'bono' && chip.dataset.val === 'Sí' ? 'on-bono' : 'on');
     renderKPIs();
@@ -852,6 +873,7 @@ function setupChipGroup(containerId, stateKey) {
 }
 setupChipGroup('filter-tipo','tipo');
 setupChipGroup('filter-bono','bono');
+setupChipGroup('filter-calibra','calibra');
 
 // Mobile search
 const mobileSearch = document.getElementById('mobile-search');
