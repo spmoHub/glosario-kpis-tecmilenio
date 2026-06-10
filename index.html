@@ -247,7 +247,7 @@ main {
 /* ── STATS BAR ───────────────────────────────────────────────────────────────── */
 .stats-row {
   display: grid;
-  grid-template-columns: repeat(3, 1fr);
+  grid-template-columns: repeat(4, 1fr);
   gap: 14px;
 }
 .stat-tile {
@@ -260,6 +260,7 @@ main {
 }
 .stat-tile:nth-child(2) { animation-delay: .06s; }
 .stat-tile:nth-child(3) { animation-delay: .12s; }
+.stat-tile:nth-child(4) { animation-delay: .18s; }
 .stat-icon-wrap {
   width: 44px; height: 44px; border-radius: 12px; flex-shrink: 0;
   display: flex; align-items: center; justify-content: center; font-size: 20px;
@@ -267,6 +268,7 @@ main {
 .stat-tile:nth-child(1) .stat-icon-wrap { background: rgba(0,83,76,.08); }
 .stat-tile:nth-child(2) .stat-icon-wrap { background: rgba(38,208,124,.12); }
 .stat-tile:nth-child(3) .stat-icon-wrap { background: rgba(0,164,153,.10); }
+.stat-tile:nth-child(4) .stat-icon-wrap { background: rgba(0,120,100,.10); }
 .stat-n { font-family: 'DM Serif Display', serif; font-size: 30px; color: var(--p330); line-height: 1; }
 .stat-lbl { font-size: 12px; color: var(--ink60); margin-top: 2px; }
 
@@ -467,7 +469,7 @@ main { scrollbar-width: thin; scrollbar-color: var(--ink10) transparent; }
   .sidebar { display: none; }
   .app-shell { flex-direction: column; }
   main { padding: 20px 18px 48px; }
-  .stats-row { grid-template-columns: repeat(3, 1fr); gap: 8px; }
+  .stats-row { grid-template-columns: repeat(4, 1fr); gap: 8px; }
   .stat-tile { padding: 14px 16px; }
   .stat-n { font-size: 24px; }
   .glosario-grid { grid-template-columns: 1fr; }
@@ -488,7 +490,8 @@ main { scrollbar-width: thin; scrollbar-color: var(--ink10) transparent; }
   header { padding: 0 16px; }
   .h-wordmark { font-size: 17px; }
   .stats-row { grid-template-columns: 1fr 1fr; }
-  .stat-tile:last-child { grid-column: span 2; }
+  .stat-tile:nth-child(3) { grid-column: span 1; }
+  .stat-tile:nth-child(4) { grid-column: span 2; }
 }
 </style>
 </head>
@@ -709,9 +712,10 @@ function getFiltered() {
 }
 
 function renderStats() {
-  const total = allKPIs.length;
-  const bono  = allKPIs.filter(k => k.Aplica_Bono === 'Sí').length;
-  const cons  = allKPIs.filter(k => k.Tipo === 'Consejo').length;
+  const total   = allKPIs.length;
+  const bono    = allKPIs.filter(k => k.Aplica_Bono   === 'Sí').length;
+  const cons    = allKPIs.filter(k => k.Tipo          === 'Consejo').length;
+  const calibra = allKPIs.filter(k => k.Calibracion   === 'Sí').length;
   document.getElementById('stats-row').innerHTML = `
     <div class="stat-tile">
       <div class="stat-icon-wrap">📋</div>
@@ -724,6 +728,10 @@ function renderStats() {
     <div class="stat-tile">
       <div class="stat-icon-wrap">🏛️</div>
       <div><div class="stat-n">${cons}</div><div class="stat-lbl">Indicadores de Consejo</div></div>
+    </div>
+    <div class="stat-tile">
+      <div class="stat-icon-wrap">🎯</div>
+      <div><div class="stat-n">${calibra}</div><div class="stat-lbl">Aplican calibración</div></div>
     </div>
   `;
 }
