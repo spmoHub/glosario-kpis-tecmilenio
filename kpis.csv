@@ -1,4 +1,4 @@
-﻿Nombre,Definicion,Tipo,Aplica_Bono,Calibración,Area,Frecuencia,Formula,Tags
+﻿Nombre,Definicion,Tipo,Aplica_Bono,Calibracion,Area,Frecuencia,Formula,Tags
 Continuidad,Porcentaje de alumnos que continúan inscritos al siguiente inmediato,Operativo,No,Sí,Académica,Semestral,(Alumnos graduados inscritos en siguiente nivel académico /  Total de alumnos graduados inscritoes en EOF de periodo anterior) * 100,"retención, deserción, continuidad, matrícula"
 NPS,Índice de satisfacción estudiantil derivado de la Opina. Mide la probabilidad de recomendación en una escala del 0 al 10. ,Operativo,Sí,Sí,Académica,Tetramestral,((Alumnos promotores - Alumnos detractores)/Total de alumnos) * 100,"NPS, satisfacción,  encuesta"
 OPP,Proporción de horas-clase cubiertas por docentes con perfil deseable sobre el total de horas impartidas.,Operativo,No,Sí,Recursos Humanos,Semestral,(Horas con perfil deseable / Total horas impartidas) × 100,"docentes, perfil, habilitación, PRODEP"
